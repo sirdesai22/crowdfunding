@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 contract Funding {
     struct Campaign {
+        uint256 id;
         uint256 amount;
         uint256 goal;
         uint256 deadline;
@@ -15,6 +16,7 @@ contract Funding {
 
     function createCampaign(uint256 _goal, uint256 _deadline, string memory _name) public payable {
         Campaign memory campaign = Campaign({
+            id: allCampaigns.length,
             amount: 0,
             goal: _goal,
             deadline: _deadline,
@@ -30,16 +32,23 @@ contract Funding {
         return allCampaigns;
     }
     
-    function fund(uint256 _campaignIndex) public payable {
-        Campaign storage campaign = allCampaigns[_campaignIndex];
+    function fund(uint256 id) public payable {
+        Campaign storage campaign = allCampaigns[id];
         // require(block.timestamp >= campaign.start && block.timestamp <= campaign.end, "Campaign is not active");
         require(msg.value > 0, "Funding amount must be greater than 0");
         require(campaign.amount + msg.value <= campaign.goal, "Campaign goal exceeded");
         campaign.amount += msg.value;
     }
+
+    function deleteCampaign(uint256 id) public {
+        Campaign storage campaign = allCampaigns[id];
+        require(msg.sender == campaign.creator, "Only creator can delete campaign");
+        allCampaigns[id] = allCampaigns[allCampaigns.length - 1];
+        allCampaigns.pop();
+    }
     
-    function getCampaignDetails(uint256 _campaignIndex) public view returns (Campaign memory) {
-        return allCampaigns[_campaignIndex];
+    function getCampaignDetails(uint256 id) public view returns (Campaign memory) {
+        return allCampaigns[id];
     }
 
 }
