@@ -10,11 +10,12 @@ contract Funding {
         uint256 start;
         uint256 end;
         string name;
+        string description;
         address creator;
     }
     Campaign[] public allCampaigns;
 
-    function createCampaign(uint256 _goal, uint256 _deadline, string memory _name) public payable {
+    function createCampaign(uint256 _goal, uint256 _deadline, string memory _name, string memory _description) public payable {
         Campaign memory campaign = Campaign({
             id: allCampaigns.length,
             amount: 0,
@@ -23,6 +24,7 @@ contract Funding {
             start: block.timestamp,
             end: block.timestamp + _deadline,
             name: _name,
+            description: _description,
             creator: msg.sender
         });
         allCampaigns.push(campaign);

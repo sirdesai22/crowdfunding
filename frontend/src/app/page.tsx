@@ -8,6 +8,36 @@ const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 export default function Home() {
   const [campaigns, setCampaigns] = useState<any[]>([
+    {
+      name: "Campaign 1",
+      description: "This is a campaign description",
+      amount: 0,
+      goal: 100,
+      deadline: 1719859200,
+      creator: "0x1234567890123456789012345678901234567890",
+      isActive: true,
+      id: 1,
+    },
+    {
+      name: "Campaign 2",
+      description: "This is a campaign description",
+      amount: 0,
+      goal: 100,
+      deadline: 1719859200,
+      creator: "0x1234567890123456789012345678901234567890",
+      isActive: true,
+      id: 2,
+    },
+    {
+      name: "Campaign 3",
+      description: "This is a campaign description",
+      amount: 0,
+      goal: 100,
+      deadline: 1719859200,
+      creator: "0x1234567890123456789012345678901234567890",
+      isActive: true,
+      id: 3,
+    },
   ]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(null);
@@ -125,14 +155,19 @@ export default function Home() {
           )}
         </div>
       </nav>
-      <div className="flex flex-wrap p-4">
+      <div className="flex flex-col flex-wrap p-4">
         {/* Grid of projects */}
-        <div className="grid grid-cols-3 gap-4 w-full">
+        <p className="text-3xl font-bold text-center my-4">All Campaigns</p>
+        <div className="grid grid-cols-3 gap-4 w-full max-w-7xl mx-auto">
           {campaigns.map((campaign: any, index: number) => (
             <div className="bg-white p-4 rounded-md w-full" key={index}>
               <h2 className="text-lg font-bold text-black">{campaign.name}</h2>
+              <p className="text-gray-500">{campaign.description}</p>
               <p className="text-gray-500">
                 Funding Goal: {campaign.amount}/{campaign.goal}ETH
+              </p>
+              <p className="text-gray-500">
+                Deadline: {new Date(campaign.deadline * 1000).toLocaleDateString()}
               </p>
               <div className="flex items-center gap-2">
                 <button onClick={() => fundCampaign(index)} className="bg-blue-600 text-white px-4 py-2 rounded-md w-full">
