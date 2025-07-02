@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import Funding from "@/Funding.json";
 
-const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const CONTRACT_ADDRESS = "0x39442F3780D02b0CADcE4f349776Ce2D59C58Cf7";
 
 export default function Home() {
   const [campaigns, setCampaigns] = useState<any[]>([
@@ -85,7 +85,8 @@ export default function Home() {
       const name = prompt("Enter the name of the campaign");
       const goal = prompt("Enter the goal of the campaign");
       const deadline = prompt("Enter the deadline of the campaign");
-      const campaign = await contract.createCampaign(goal, deadline, name);
+      const description = prompt("Enter the description of the campaign");
+      const campaign = await contract.createCampaign(goal, deadline, name, description);
       //block need to move to the next block
       // await provider.send("evm_mine", []);
       // const campaign = await contract.createCampaign(100, 1719859200, "Campaign 1");
@@ -167,7 +168,7 @@ export default function Home() {
                 Funding Goal: {campaign.amount}/{campaign.goal}ETH
               </p>
               <p className="text-gray-500">
-                Deadline: {new Date(campaign.deadline * 1000).toLocaleDateString()}
+                Deadline: {campaign.deadline}
               </p>
               <div className="flex items-center gap-2">
                 <button onClick={() => fundCampaign(index)} className="bg-blue-600 text-white px-4 py-2 rounded-md w-full">
