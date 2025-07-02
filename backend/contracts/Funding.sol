@@ -30,7 +30,7 @@ contract Funding {
         allCampaigns.push(campaign);
     }
 
-    function getAllCampaigns() public view returns (Campaign[] memory) {
+    function getAllCampaigns() public returns (Campaign[] memory) {
         return allCampaigns;
     }
     

@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import Funding from "@/Funding.json";
 
-const CONTRACT_ADDRESS = "0x39442F3780D02b0CADcE4f349776Ce2D59C58Cf7";
+const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
 export default function Home() {
   const [campaigns, setCampaigns] = useState<any[]>([
