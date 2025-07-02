@@ -12,6 +12,7 @@ contract Funding {
         string name;
         string description;
         address creator;
+        address[] funders;
     }
     Campaign[] public allCampaigns;
 
@@ -25,12 +26,13 @@ contract Funding {
             end: block.timestamp + _deadline,
             name: _name,
             description: _description,
-            creator: msg.sender
+            creator: msg.sender,
+            funders: new address[](0)
         });
         allCampaigns.push(campaign);
     }
 
-    function getAllCampaigns() public returns (Campaign[] memory) {
+    function getAllCampaigns() public view returns (Campaign[] memory) {
         return allCampaigns;
     }
     
@@ -40,6 +42,7 @@ contract Funding {
         require(msg.value > 0, "Funding amount must be greater than 0");
         require(campaign.amount + msg.value <= campaign.goal, "Campaign goal exceeded");
         campaign.amount += msg.value;
+        campaign.funders.push(msg.sender);
     }
 
     function deleteCampaign(uint256 id) public {

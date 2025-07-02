@@ -3,10 +3,12 @@
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import Funding from "@/Funding.json";
+import { useRouter } from "next/navigation";
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
 export default function Home() {
+  const router = useRouter();
   const [campaigns, setCampaigns] = useState<any[]>([
     {
       name: "Campaign 1",
@@ -49,7 +51,9 @@ export default function Home() {
 
   const connectWallet = async () => {
     try {
-      await (window as any).ethereum.request({ method: "eth_requestAccounts" });
+      const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" });
+      setAccount(accounts[0]);
+      setIsConnected(true);
     } catch (error) {
       console.error(error);
     }
@@ -58,21 +62,27 @@ export default function Home() {
   const getContract = async () => {
     try {
       setError("");
-      const provider = new ethers.BrowserProvider((window as any).ethereum);
-      setProvider(provider);
-      const signer = await provider.getSigner(); // get the signer of the account
-      const accounts = await provider.send("eth_requestAccounts", []); // get the accounts of the user
-      setAccount(accounts[0]);
-      setIsConnected(true);
+      let provider;
+      let contractInstance;
 
-      const contract = new ethers.Contract(
-        CONTRACT_ADDRESS,
-        Funding.abi,
-        signer
-      ); // create a contract object
-      setContract(contract);
+      if ((window as any).ethereum && isConnected) {
+        // Use wallet provider if connected
+        provider = new ethers.BrowserProvider((window as any).ethereum);
+        setProvider(provider);
+        const signer = await provider.getSigner();
+        setSigner(signer);
+        contractInstance = new ethers.Contract(CONTRACT_ADDRESS, Funding.abi, signer);
+        setContract(contractInstance);
+      } else {
+        // Use read-only provider (e.g., local Hardhat node or public RPC)
+        provider = new ethers.JsonRpcProvider("http://localhost:8545"); // or your testnet/mainnet RPC URL
+        setProvider(provider);
+        contractInstance = new ethers.Contract(CONTRACT_ADDRESS, Funding.abi, provider);
+        setContract(contractInstance);
+      }
 
-      const allCampaigns = await contract.getAllCampaigns();
+      const allCampaigns = await contractInstance.getAllCampaigns();
+      // console.log(allCampaigns[0])
       setCampaigns(allCampaigns);
     } catch (error) {
       console.error(error);
@@ -122,7 +132,7 @@ export default function Home() {
 
   useEffect(() => {
     getContract();
-  }, []);
+  }, [isConnected]);
 
   return (
     <div className="min-h-screen">
@@ -162,6 +172,7 @@ export default function Home() {
         <div className="grid grid-cols-3 gap-4 w-full max-w-7xl mx-auto">
           {campaigns.map((campaign: any, index: number) => (
             <div className="bg-white p-4 rounded-md w-full" key={index}>
+              <button className="text-gray-500" onClick={() => router.push(`/campaign/${campaign.id}`)}>Campaign Details</button>
               <h2 className="text-lg font-bold text-black">{campaign.name}</h2>
               <p className="text-gray-500">{campaign.description}</p>
               <p className="text-gray-500">
